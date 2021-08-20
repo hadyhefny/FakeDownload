@@ -1,7 +1,7 @@
-package com.hefny.hady.fakedownload.domain
+package com.hefny.hady.fakedownload.data.remote.datasource
 
 import io.reactivex.rxjava3.core.Observable
 
-interface MainRepository {
+interface RemoteDataSource {
     fun getFakeVideos(): Observable<Int>
 }

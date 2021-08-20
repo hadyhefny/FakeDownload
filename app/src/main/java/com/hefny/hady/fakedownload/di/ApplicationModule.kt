@@ -1,7 +1,10 @@
 package com.hefny.hady.fakedownload.di
 
 import com.hefny.hady.fakedownload.data.remote.FakeDownloadApi
+import com.hefny.hady.fakedownload.data.remote.datasource.RemoteDataSource
+import com.hefny.hady.fakedownload.data.remote.datasource.RemoteDataSourceImpl
 import com.hefny.hady.fakedownload.data.repos.MainRepositoryImpl
+import com.hefny.hady.fakedownload.domain.GetFakeVideosUseCase
 import com.hefny.hady.fakedownload.domain.MainRepository
 import com.hefny.hady.fakedownload.utils.Constants
 import dagger.Module
@@ -72,7 +75,19 @@ class ApplicationModule {
 
     @Singleton
     @Provides
-    fun provideMainRepository(fakeDownloadApi: FakeDownloadApi): MainRepository {
-        return MainRepositoryImpl(fakeDownloadApi)
+    fun provideRemoteDataSource(fakeDownloadApi: FakeDownloadApi): RemoteDataSource {
+        return RemoteDataSourceImpl(fakeDownloadApi)
+    }
+
+    @Singleton
+    @Provides
+    fun provideMainRepository(remoteDataSource: RemoteDataSource): MainRepository {
+        return MainRepositoryImpl(remoteDataSource)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGetFakeVideoUseCase(mainRepository: MainRepository): GetFakeVideosUseCase {
+        return GetFakeVideosUseCase(mainRepository)
     }
 }
