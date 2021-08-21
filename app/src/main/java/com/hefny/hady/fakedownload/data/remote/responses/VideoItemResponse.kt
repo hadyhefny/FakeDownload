@@ -8,8 +8,4 @@ data class VideoItemResponse(
     val url: String,
     var downloaded: Int = -1,
     var totalItemSizeInMegaBytes: Int = 5
-){
-    fun getDownloadedPercentage(): Int{
-        return (downloaded * 100) / totalItemSizeInMegaBytes
-    }
-}
+)

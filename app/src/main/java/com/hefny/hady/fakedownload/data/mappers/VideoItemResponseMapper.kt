@@ -1,4 +1,4 @@
-package com.hefny.hady.fakedownload.data
+package com.hefny.hady.fakedownload.data.mappers
 
 import com.hefny.hady.fakedownload.data.remote.responses.VideoItemResponse
 import com.hefny.hady.fakedownload.domain.models.VideoItem

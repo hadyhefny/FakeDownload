@@ -3,7 +3,7 @@ package com.hefny.hady.fakedownload.data.repos
 import com.hefny.hady.fakedownload.data.remote.datasource.RemoteDataSource
 import com.hefny.hady.fakedownload.data.remote.responses.VideoItemResponse
 import com.hefny.hady.fakedownload.data.remote.responses.VideosListResponse
-import com.hefny.hady.fakedownload.data.toVideoItem
+import com.hefny.hady.fakedownload.data.mappers.toVideoItem
 import com.hefny.hady.fakedownload.domain.MainRepository
 import com.hefny.hady.fakedownload.domain.models.VideoItem
 import io.reactivex.Observable

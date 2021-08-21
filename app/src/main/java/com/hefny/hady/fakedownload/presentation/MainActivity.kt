@@ -6,10 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.hefny.hady.fakedownload.FakeDownloadApplication
-import com.hefny.hady.fakedownload.data.remote.responses.VideosListResponse
-import com.hefny.hady.fakedownload.data.toVideoItem
 import com.hefny.hady.fakedownload.databinding.ActivityMainBinding
-import com.hefny.hady.fakedownload.domain.models.VideoItem
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), OnItemClickListener {
