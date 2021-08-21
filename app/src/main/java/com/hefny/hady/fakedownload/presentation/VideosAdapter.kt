@@ -3,20 +3,17 @@ package com.hefny.hady.fakedownload.presentation
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.hefny.hady.fakedownload.R
-import com.hefny.hady.fakedownload.data.remote.responses.VideoItemResponse
+import com.hefny.hady.fakedownload.databinding.VideoListitemBinding
+import com.hefny.hady.fakedownload.domain.models.VideoItem
 
 class VideosAdapter(private val onItemClickListener: OnItemClickListener) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private var videosList: List<VideoItemResponse> = ArrayList()
+    private var videosList: List<VideoItem> = ArrayList()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.video_listitem, parent, false)
-        return VideoViewHolder(view, onItemClickListener)
+        val binding =
+            VideoListitemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return VideoViewHolder(binding, onItemClickListener)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -28,46 +25,47 @@ class VideosAdapter(private val onItemClickListener: OnItemClickListener) :
         return videosList.size
     }
 
-    fun setVideos(videos: List<VideoItemResponse>) {
+    fun setVideos(videos: List<VideoItem>) {
         videosList = videos
         notifyDataSetChanged()
     }
 
-    fun updateItem(id: Int, downloadedPercentage: Int) {
+    fun updateItem(item: VideoItem) {
         videosList.forEachIndexed { index, videoItem ->
-            if (videoItem.id == id) {
-                videoItem.downloadedPercentage = downloadedPercentage
+            if (videoItem.id == item.id) {
+                videoItem.downloaded = item.downloaded
                 notifyItemChanged(index)
             }
         }
     }
 
-    class VideoViewHolder(view: View, private val onItemClickListener: OnItemClickListener) :
-        RecyclerView.ViewHolder(view) {
-        private val name: TextView = itemView.findViewById(R.id.video_name)
-        private val progressBar: ProgressBar = itemView.findViewById(R.id.video_progress)
-        private val playImage: ImageView = itemView.findViewById(R.id.video_play)
-        private val downloadImage: ImageView = itemView.findViewById(R.id.video_download)
-        private val downloadPercentage: TextView = itemView.findViewById(R.id.download_percentage)
-        fun bind(item: VideoItemResponse) {
-            name.text = item.name
-            progressBar.progress = item.downloadedPercentage
-            downloadPercentage.text = "${item.downloadedPercentage}%"
-            if (item.downloadedPercentage >= 0) {
-                progressBar.visibility = View.VISIBLE
-                playImage.visibility = View.GONE
-                downloadImage.visibility = View.GONE
-                downloadPercentage.visibility = View.VISIBLE
+    class VideoViewHolder(
+        private val binding: VideoListitemBinding,
+        private val onItemClickListener: OnItemClickListener
+    ) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: VideoItem) {
+            binding.videoName.text = item.name
+            binding.videoProgress.progress = item.getDownloadedPercentage()
+            binding.downloadPercentage.text = "${item.getDownloadedPercentage()}%"
+            if (item.getDownloadedPercentage() >= 0) {
+                binding.videoProgress.visibility = View.VISIBLE
+                binding.videoPlay.visibility = View.GONE
+                binding.videoDownload.visibility = View.GONE
+                binding.downloadPercentage.visibility = View.VISIBLE
             }
-            if (item.downloadedPercentage == 100) {
-                progressBar.visibility = View.GONE
-                playImage.visibility = View.VISIBLE
-                downloadImage.visibility = View.GONE
-                downloadPercentage.visibility = View.GONE
+            if (item.getDownloadedPercentage() == 100) {
+                binding.videoProgress.visibility = View.GONE
+                binding.videoPlay.visibility = View.VISIBLE
+                binding.videoDownload.visibility = View.GONE
+                binding.downloadPercentage.visibility = View.GONE
             }
             itemView.setOnClickListener {
-                if (item.downloadedPercentage < 0) {
-                    onItemClickListener.onItemClicked(item.id)
+                if (item.getDownloadedPercentage() < 0) {
+                    onItemClickListener.downloadVideo(item.id)
+                }
+                if (item.getDownloadedPercentage() == 100) {
+                    onItemClickListener.playVideo(item.url)
                 }
             }
         }
@@ -75,5 +73,6 @@ class VideosAdapter(private val onItemClickListener: OnItemClickListener) :
 }
 
 interface OnItemClickListener {
-    fun onItemClicked(id: Int)
+    fun downloadVideo(id: Int)
+    fun playVideo(url: String)
 }

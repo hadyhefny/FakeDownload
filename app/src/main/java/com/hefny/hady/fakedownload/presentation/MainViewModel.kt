@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.hefny.hady.fakedownload.domain.GetFakeVideosUseCase
-import com.hefny.hady.fakedownload.utils.Constants
+import com.hefny.hady.fakedownload.domain.models.VideoItem
 import com.hefny.hady.fakedownload.utils.Resource
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observer
@@ -20,31 +20,31 @@ class MainViewModel @Inject constructor(private val getFakeVideosUseCase: GetFak
 
     private val disposable = CompositeDisposable()
 
-    private val _videosMutableLiveData = MutableLiveData<Resource<Int>>()
-    val videosLiveData: LiveData<Resource<Int>>
-        get() = _videosMutableLiveData
+    private val _downloadVideoMutableLiveData = MutableLiveData<Resource<VideoItem>>()
+    val downloadVideoLiveData: LiveData<Resource<VideoItem>>
+        get() = _downloadVideoMutableLiveData
 
     fun downloadVideo(id: Int) {
-        _videosMutableLiveData.value = Resource.loading(true)
-        getFakeVideosUseCase.getFakeVideos()
+        _downloadVideoMutableLiveData.value = Resource.loading(true)
+        getFakeVideosUseCase.downloadFakeVideo(id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : Observer<Int> {
+            .subscribe(object : Observer<VideoItem> {
                 override fun onSubscribe(d: Disposable?) {
                     disposable.add(d)
                 }
 
-                override fun onNext(t: Int?) {
-                    _videosMutableLiveData.value = Resource.data(t, id = id)
+                override fun onNext(t: VideoItem?) {
+                    _downloadVideoMutableLiveData.value = Resource.data(t, id = id)
                 }
 
                 override fun onError(e: Throwable?) {
-                    _videosMutableLiveData.value = Resource.error(e?.message)
+                    _downloadVideoMutableLiveData.value = Resource.error(e?.message)
                 }
 
                 override fun onComplete() {
-                    _videosMutableLiveData.value = Resource.data(
-                        Constants.FAKE_VIDEO_SIZE_IN_MEGA_BYTES,
+                    _downloadVideoMutableLiveData.value = Resource.data(
+                        null,
                         "Video is downloaded",
                         id
                     )

@@ -1,13 +1,16 @@
 package com.hefny.hady.fakedownload.presentation
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.hefny.hady.fakedownload.FakeDownloadApplication
 import com.hefny.hady.fakedownload.R
 import com.hefny.hady.fakedownload.data.remote.responses.VideosListResponse
-import com.hefny.hady.fakedownload.utils.Constants
+import com.hefny.hady.fakedownload.data.toVideoItem
+import com.hefny.hady.fakedownload.databinding.ActivityMainBinding
+import com.hefny.hady.fakedownload.domain.models.VideoItem
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), OnItemClickListener {
@@ -18,35 +21,39 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
     }
     private lateinit var adapter: VideosAdapter
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as FakeDownloadApplication).appComponent.inject(this)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        recyclerView = findViewById(R.id.videos_recyclerview)
-        subscribeObserves()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initRecyclerview()
+        subscribeObserves()
     }
 
     private fun initRecyclerview() {
         adapter = VideosAdapter(this)
-        recyclerView.adapter = adapter
-        adapter.setVideos(VideosListResponse().videoResponses)
+        binding.videosRecyclerview.adapter = adapter
+        val videoItems: ArrayList<VideoItem> = ArrayList()
+        VideosListResponse().videoResponses.forEach {
+            videoItems.add(it.toVideoItem())
+        }
+        adapter.setVideos(videoItems)
     }
 
     private fun subscribeObserves() {
-        viewModel.videosLiveData.observe(this) { dataResource ->
-            dataResource.data?.let { downloadedMegaBytes ->
-                val currentPercentage =
-                    (downloadedMegaBytes * 100) / Constants.FAKE_VIDEO_SIZE_IN_MEGA_BYTES
-                dataResource.id?.let { itemId ->
-                    adapter.updateItem(itemId, currentPercentage)
-                }
+        viewModel.downloadVideoLiveData.observe(this) { dataResource ->
+            dataResource.data?.let { item ->
+                adapter.updateItem(item)
             }
         }
     }
 
-    override fun onItemClicked(id: Int) {
+    override fun downloadVideo(id: Int) {
         viewModel.downloadVideo(id)
+    }
+
+    override fun playVideo(url: String) {
+        Toast.makeText(this, url, Toast.LENGTH_SHORT).show()
     }
 }
