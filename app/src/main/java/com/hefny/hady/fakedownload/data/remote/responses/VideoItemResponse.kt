@@ -6,5 +6,5 @@ data class VideoItemResponse(
     val id: Int,
     val type: String,
     val url: String,
-    var downloadedPercentage: Int = 0,
+    var downloadedPercentage: Int = -1,
 )

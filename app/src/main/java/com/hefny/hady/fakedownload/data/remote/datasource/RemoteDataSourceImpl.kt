@@ -11,7 +11,7 @@ class RemoteDataSourceImpl @Inject constructor(fakeDownloadApi: FakeDownloadApi)
     RemoteDataSource {
     override fun getFakeVideos(): Observable<Int> {
         return Observable.create { emitter ->
-            for (i in 1..Constants.FAKE_VIDEO_SIZE_IN_MEGA_BYTES) {
+            for (i in 0..Constants.FAKE_VIDEO_SIZE_IN_MEGA_BYTES) {
                 emitter?.onNext(i)
                 Thread.sleep(1000)
             }

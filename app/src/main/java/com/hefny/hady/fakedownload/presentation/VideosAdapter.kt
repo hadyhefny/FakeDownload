@@ -48,21 +48,25 @@ class VideosAdapter(private val onItemClickListener: OnItemClickListener) :
         private val progressBar: ProgressBar = itemView.findViewById(R.id.video_progress)
         private val playImage: ImageView = itemView.findViewById(R.id.video_play)
         private val downloadImage: ImageView = itemView.findViewById(R.id.video_download)
+        private val downloadPercentage: TextView = itemView.findViewById(R.id.download_percentage)
         fun bind(item: VideoItemResponse) {
             name.text = item.name
             progressBar.progress = item.downloadedPercentage
-            if (item.downloadedPercentage > 0) {
+            downloadPercentage.text = "${item.downloadedPercentage}%"
+            if (item.downloadedPercentage >= 0) {
                 progressBar.visibility = View.VISIBLE
                 playImage.visibility = View.GONE
                 downloadImage.visibility = View.GONE
+                downloadPercentage.visibility = View.VISIBLE
             }
             if (item.downloadedPercentage == 100) {
                 progressBar.visibility = View.GONE
                 playImage.visibility = View.VISIBLE
                 downloadImage.visibility = View.GONE
+                downloadPercentage.visibility = View.GONE
             }
             itemView.setOnClickListener {
-                if (item.downloadedPercentage == 0) {
+                if (item.downloadedPercentage < 0) {
                     onItemClickListener.onItemClicked(item.id)
                 }
             }
