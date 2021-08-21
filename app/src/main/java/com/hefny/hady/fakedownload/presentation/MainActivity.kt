@@ -3,10 +3,9 @@ package com.hefny.hady.fakedownload.presentation
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
 import com.hefny.hady.fakedownload.FakeDownloadApplication
-import com.hefny.hady.fakedownload.R
 import com.hefny.hady.fakedownload.data.remote.responses.VideosListResponse
 import com.hefny.hady.fakedownload.data.toVideoItem
 import com.hefny.hady.fakedownload.databinding.ActivityMainBinding
@@ -29,16 +28,12 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         setContentView(binding.root)
         initRecyclerview()
         subscribeObserves()
+        viewModel.getFakeVideos()
     }
 
     private fun initRecyclerview() {
         adapter = VideosAdapter(this)
         binding.videosRecyclerview.adapter = adapter
-        val videoItems: ArrayList<VideoItem> = ArrayList()
-        VideosListResponse().videoResponses.forEach {
-            videoItems.add(it.toVideoItem())
-        }
-        adapter.setVideos(videoItems)
     }
 
     private fun subscribeObserves() {
@@ -46,7 +41,23 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
             dataResource.data?.let { item ->
                 adapter.updateItem(item)
             }
+            dataResource.error?.let { errorMsg ->
+                showErrorToast(errorMsg)
+            }
         }
+        viewModel.fakeVideosLiveData.observe(this) { dataResource ->
+            binding.progressbar.isVisible = dataResource.loading
+            dataResource.data?.let { videos ->
+                adapter.setVideos(videos)
+            }
+            dataResource.error?.let { errorMsg ->
+                showErrorToast(errorMsg)
+            }
+        }
+    }
+
+    private fun showErrorToast(errorMessage: String){
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
     }
 
     override fun downloadVideo(id: Int) {

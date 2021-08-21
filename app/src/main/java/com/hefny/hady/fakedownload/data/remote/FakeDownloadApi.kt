@@ -1,11 +1,17 @@
 package com.hefny.hady.fakedownload.data.remote
 
 import com.hefny.hady.fakedownload.data.remote.responses.VideoItemResponse
-import com.hefny.hady.fakedownload.data.remote.responses.VideosListResponse
-import io.reactivex.rxjava3.core.Observable
+import io.reactivex.Observable
+import io.reactivex.Single
 import retrofit2.http.GET
+import retrofit2.http.Path
 
 interface FakeDownloadApi {
-    @GET("videos")
-    fun downloadFakeVideo(id: Int): Observable<VideoItemResponse>
+    @GET("{id}")
+    fun downloadFakeVideo(
+        @Path("id") id: Int
+    ): Observable<VideoItemResponse>
+
+    @GET("movies")
+    fun getFakeVideos(): Single<ArrayList<VideoItemResponse>>
 }

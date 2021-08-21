@@ -4,6 +4,7 @@ import com.hefny.hady.fakedownload.data.remote.FakeDownloadApi
 import com.hefny.hady.fakedownload.data.remote.datasource.RemoteDataSource
 import com.hefny.hady.fakedownload.data.remote.datasource.RemoteDataSourceImpl
 import com.hefny.hady.fakedownload.data.repos.MainRepositoryImpl
+import com.hefny.hady.fakedownload.domain.DownloadFakeVideoUseCase
 import com.hefny.hady.fakedownload.domain.GetFakeVideosUseCase
 import com.hefny.hady.fakedownload.domain.MainRepository
 import com.hefny.hady.fakedownload.utils.Constants
@@ -12,7 +13,7 @@ import dagger.Provides
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
@@ -46,8 +47,8 @@ class ApplicationModule {
 
     @Singleton
     @Provides
-    fun provideRxJavaCallAdapterFactory(): RxJava3CallAdapterFactory {
-        return RxJava3CallAdapterFactory.create()
+    fun provideRxJavaCallAdapterFactory(): RxJava2CallAdapterFactory {
+        return RxJava2CallAdapterFactory.create()
     }
 
     @Singleton
@@ -55,7 +56,7 @@ class ApplicationModule {
     fun provideRetrofit(
         okHttpClient: OkHttpClient,
         gsonConverterFactory: GsonConverterFactory,
-        rxJava3CallAdapterFactory: RxJava3CallAdapterFactory
+        rxJava3CallAdapterFactory: RxJava2CallAdapterFactory
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
@@ -87,7 +88,13 @@ class ApplicationModule {
 
     @Singleton
     @Provides
-    fun provideGetFakeVideoUseCase(mainRepository: MainRepository): GetFakeVideosUseCase {
+    fun provideGetFakeVideosUseCase(mainRepository: MainRepository): GetFakeVideosUseCase {
         return GetFakeVideosUseCase(mainRepository)
+    }
+
+    @Singleton
+    @Provides
+    fun provideDownloadFakeVideoUseCase(mainRepository: MainRepository): DownloadFakeVideoUseCase {
+        return DownloadFakeVideoUseCase(mainRepository)
     }
 }
