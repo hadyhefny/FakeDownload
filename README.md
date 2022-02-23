@@ -13,7 +13,7 @@ The following technologies are used:
 - ViewModel to store and manage UI-related data in a lifecycle conscious way.
 - Dagger2 library to do dependency injection and reducing the boilerplate code.
 - RxJava & RxAndroid for doing work on a background thread and communicating to a main thread.
-- Retrofit library used to privde esay way to make api requests.
+- Retrofit library used to proivde esay way to make api requests.
 
 Preview
 --
